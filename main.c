@@ -13,12 +13,15 @@ void fileToString (char s[]);
 
 int main (){
     FILE * fp;
-    char file[1000];
-    int scelta;
+    int cont=0;
+    char ch='a';
+    int i=0;
+    char datiAlunno[100];
+    int scelta=-1;
     Alunno classe[40];
 
     do{
-        printf("GESTORE ALUNNI        \n");
+        printf("\nGESTORE ALUNNI      \n");
         printf("Seleziona un opzione: \n");
         printf("1 - Aggiungi alunno   \n");
         printf("2 - Elimina alunno    \n");
@@ -29,7 +32,24 @@ int main (){
 
         switch(scelta){
             case 1: //Aggiungi alunno
-                fileToString(file);
+                fp= fopen("classe/4aii.txt", "r");
+                if(fp == NULL){
+                    printf("Errore nell'apertura del file\n");
+                }
+
+                while(!feof(fp)){ //lettura della stringa di un file
+                    fgets(datiAlunno, 100, fp);
+                    while(ch!='|'&&i==3){ //Prende il nome
+                        ch=gets(datiAlunno);
+                        i++
+
+                    }
+                    printf("%s", datiAlunno);
+                    cont++;
+                }
+                printf("\n");
+
+                fclose(fp);
                 break;
 
             case 2:
@@ -37,22 +57,4 @@ int main (){
         }
 
     }while(scelta!=0);
-}
-
-void fileToString (char s[]){
-    /*FILE * fp;
-    char ch;
-    fp= fopen("classe/4aii.txt", "r");
-    if(fp == NULL){
-        printf("Errore nell'apertura del file\n");
-    }
-
-    while(!feof(fp)){
-        fgets(s, 1000, fp);
-        printf("Ho letto %s\n", s);
-    }
-
-
-
-    fclose(fp);*/
 }
