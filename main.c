@@ -11,7 +11,8 @@ typedef struct{
 
 void scriviSuFile(FILE * fp, Alunno a); //FUNZIONA
 void inizializzaAlunno(char nome[], char cognome[], int altezza, Alunno * pAlunno); //FUNZIONA
-void eliminaACapo(char stringa[]);
+void eliminaACapo(char stringa[]); //FUNZIONA
+void caricaDaFile(Alunno * a, char line[]);
 
 
 
@@ -20,11 +21,12 @@ int main (){
     FILE *fp;
     Alunno classe[40];
     int cont=0;
+    int i=0;
     int scelta;
     char nome[100];
     char cognome[200];
-    char file[1000];
     int altezza;
+    char line[200];
     char nomeFile[20];
 
 
@@ -36,7 +38,8 @@ int main (){
 
         do{
             printf("GESTORE ALUNNI\n");
-            printf("1 - Aggiungi utente \n");
+            printf("1 - Aggiungi alunni \n");
+            printf("2 - Visualizza alunni\n");
             printf("0 - Salva ed esci\n");
             scanf("%d", &scelta);
             fflush(stdin);
@@ -58,12 +61,29 @@ int main (){
                     fflush(stdin);
 
                     inizializzaAlunno(nome, cognome, altezza, &classe[cont]);
-                    fp=fopen(nomeFile, "w"); //Apertura del file
-                    for(int i=0; i<cont; i++){
-                        scriviSuFile(fp, classe[i]);
-                    }
+                    fp=fopen(nomeFile, "ab"); //Apertura del file, con ab il contenuto verrà scritto dopo l'ultima riga
+                                                            // senza dover sovrascrivere il file
+                    scriviSuFile(fp, classe[cont]);
+
                     fclose(fp); //Chiusura del file
                     cont++;
+                    break;
+
+                case 2:
+                    fp = fopen(nomeFile, "r");
+
+                    if (fp == NULL) {
+                        printf("Errore nell'apertura del file \n");
+                        break;
+                    }
+
+                    while(fgets(line, sizeof(line), fp) != NULL) {
+
+                        caricaDaFile(&classe[cont], line);
+                        cont++;
+                    }
+
+                        fclose(fp);
                     break;
             }
         }while (scelta!=0);
@@ -77,7 +97,7 @@ int main (){
 }
 
 void scriviSuFile(FILE * fp, Alunno a){ //FUNZIONA
-    fprintf(fp, "%s ; %s ; %d cm\n", a.nome, a.cognome, a.altezza);
+    fprintf(fp, "%s;%s;%d\n", a.nome, a.cognome, a.altezza);
 }
 
 void inizializzaAlunno(char nome[], char cognome[], int altezza, Alunno * pAlunno){ //FUNZIONA
@@ -88,4 +108,26 @@ void inizializzaAlunno(char nome[], char cognome[], int altezza, Alunno * pAlunn
 
 void eliminaACapo(char stringa[]){
     stringa[(strlen(stringa))-1]='\0';
+}
+
+void caricaDaFile(Alunno * a, char line[]){
+    char * token;
+    char nome[100];
+    char cognome[200];
+    char h[10];
+    int altezza;
+    token = strtok(line, ";");
+    strcpy(nome, token);
+    printf("%s\n", token);
+    token = strtok( NULL, ";" );
+    strcpy(cognome, token);
+    printf("%s\n", token);
+
+    token = strtok( NULL, ";" );
+    strcpy(h, token);
+
+    altezza=(int) atoll(h);
+    printf("%s\n", token);
+
+    inizializzaAlunno(nome, cognome, altezza, a);
 }
